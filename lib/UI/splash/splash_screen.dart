@@ -29,7 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
       backgroundColor: Color(kBlue.value),
       body: Center(
         child: Text(
-          "Hello Balemuya",
+          "Hello Balemoya",
           textAlign: TextAlign.center,
           style: appstyle(35, Color(kLight.value), FontWeight.w500),
         ), // Replace with your image asset

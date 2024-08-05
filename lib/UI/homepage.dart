@@ -1,22 +1,16 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:provider_app_orientation/UI/auth/login.dart';
+import 'package:provider_app_orientation/common/reusable_text.dart';
 import 'package:provider_app_orientation/constants/app_constants.dart';
-
 import 'package:provider_app_orientation/common/app_style.dart';
-
 import 'package:provider_app_orientation/common/bottom_sheet.dart';
 import 'package:provider_app_orientation/common/custom_btn.dart';
 import 'package:provider_app_orientation/common/custom_icon.dart';
-
-import 'package:provider_app_orientation/common/exports.dart';
-
 import 'package:provider_app_orientation/common/width_spacer.dart';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'map/mapview_page.dart'; // Assuming you have this file for MapViewPage
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -28,7 +22,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    
     double? containerheight;
     double? nearbyContainerWidth;
     double? nearbyContainerheight;
@@ -57,7 +50,7 @@ class _HomePageState extends State<HomePage> {
         containerheight = 300.h;
         loginHeight = 33;
       } else {
-                nearbyContainerWidth = 140.w;
+        nearbyContainerWidth = 140.w;
         nearbyContainerheight = 125.h;
         loginHeight = 64;
         toolbarheight = 84.h;
@@ -68,7 +61,7 @@ class _HomePageState extends State<HomePage> {
       }
     } else {
       if (orientaion == Orientation.portrait) {
-                nearbyContainerWidth = 210.w;
+        nearbyContainerWidth = 210.w;
         nearbyContainerheight = 65.h;
         loginHeight = 31;
         iconWidth = sWidth / 55;
@@ -82,7 +75,7 @@ class _HomePageState extends State<HomePage> {
         toolbarheight = 58.h;
         containerheight = 290.h;
       } else {
-                nearbyContainerWidth = 150.w;
+        nearbyContainerWidth = 150.w;
         nearbyContainerheight = 95.h;
         loginHeight = 51;
         iconWidth = sWidth / 55;
@@ -106,12 +99,6 @@ class _HomePageState extends State<HomePage> {
             alignment: Alignment.centerLeft,
             child: Image.asset("assets/images/logo.png")),
         leadingWidth: 200,
-
-        // title:
-        // // ReusableText(
-        // //     text: "Home",
-        // //     style: appstyle(headersize, Colors.black, FontWeight.normal)),
-        // ,
         actions: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -123,7 +110,7 @@ class _HomePageState extends State<HomePage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) {
-                        return LoginPage();
+                        return const LoginPage();
                       },
                     ),
                   );
@@ -147,20 +134,14 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: SafeArea(
-        child: Container(
-          child: Stack(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage(
-                          "assets/images/mapnavigation.jpg",
-                        ),
-                        fit: BoxFit.fill)),
-                width: double.infinity,
-                height: double.infinity,
-              ),
-              GestureDetector(
+        child: Stack(
+          children: [
+            // MapViewPage integrated here
+            const MapviewPage(),
+            Positioned(
+              top: 30.h,
+              left: 10.w,
+              child: GestureDetector(
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 5.w),
                   width: nearbyContainerWidth,
@@ -195,47 +176,45 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              Positioned(
-                top: 170.h,
-                left: 140.w,
-                child: GestureDetector(
-                    onTap: () {
-                      // Call showModalBottomSheet from here
-                      showModalBottomSheet(
-                        isScrollControlled: true,
-                        backgroundColor: Colors
-                            .transparent, // Set the background color to transparent
-                        clipBehavior: Clip.antiAliasWithSaveLayer,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(25),
-                          ),
+            ),
+            Positioned(
+              top: 170.h,
+              left: 140.w,
+              child: GestureDetector(
+                  onTap: () {
+                    showModalBottomSheet(
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      clipBehavior: Clip.antiAliasWithSaveLayer,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(25),
                         ),
-                        context: context,
-                        builder: (BuildContext context) {
-                          return Wrap(children: [
-                            Container(
-                              padding: EdgeInsets.all(10),
-                              color: Colors.white,
-                              child: CustomBottomSheet(
-                                  name: "Addis Mekuriya",
-                                  problem: "Plumber",
-                                  location: "Addis Abab,Ayat",
-                                  distance: "6km",
-                                  status: "online"),
-                            ),
-                          ]);
-                        },
-                      );
-                    },
-                    child: CustomIcon(
-                      width: iconWidth + 0.02,
-                      icon: Icons.assistant_navigation,
-                      color: Color(kBlue.value),
-                    )),
-              )
-            ],
-          ),
+                      ),
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Wrap(children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            color: Colors.white,
+                            child: const CustomBottomSheet(
+                                name: "Addis Mekuriya",
+                                problem: "Plumber",
+                                location: "Addis Abab,Ayat",
+                                distance: "6km",
+                                status: "online"),
+                          ),
+                        ]);
+                      },
+                    );
+                  },
+                  child: CustomIcon(
+                    width: iconWidth + 0.02,
+                    icon: Icons.assistant_navigation,
+                    color: Color(kBlue.value),
+                  )),
+            )
+          ],
         ),
       ),
     );
