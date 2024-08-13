@@ -1,71 +1,104 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider_app_orientation/constants/app_constants.dart';
 
-class ImageUpoader extends ChangeNotifier {
+class ImageCropperPage extends StatefulWidget {
+  const ImageCropperPage({super.key});
+
+  @override
+  State<ImageCropperPage> createState() => _ImageCropperPageState();
+}
+
+class _ImageCropperPageState extends State<ImageCropperPage> {
   final ImagePicker _picker = ImagePicker();
+  File? image;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title:const Text("Image Cropper"),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text(
+              "Add Image Here",
+              style: TextStyle(color: Colors.redAccent, fontSize: 22),
+            ),
+            Padding(
+              padding:const EdgeInsets.only(top: 30),
+              child: Container(
+                width: MediaQuery.of(context).size.width / 1.5,
+                height: MediaQuery.of(context).size.width / 1.5,
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+                child: Card(
+                  shape: const RoundedRectangleBorder(
+                      side: BorderSide(
+                        width: 2,
+                        color: Colors.grey,
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(10))),
+                  child: InkWell(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: image != null
+                          ? Image.file(
+                              width: MediaQuery.of(context).size.width / 4,
+                              height: MediaQuery.of(context).size.width / 4,
+                              image!,
+                              fit: BoxFit.fill,
+                            )
+                          : const Center(
+                              child: Text(
+                                "Click here to select Image",
+                                style: TextStyle(color: Colors.redAccent),
+                              ),
+                            ),
+                    ),
+                    onTap: () {
+                      imageCropper();
+                    },
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
 
-  List<String> imageUrl = [];
 
-  void pickImage() async {
-    // ignore: no_leading_underscores_for_local_identifiers
+  Future <void> imageCropper() async {
+    XFile? images = await _picker.pickImage(source: ImageSource.gallery);
+    if(images != null){
+      var cropper = (await ImageCropper().cropImage(sourcePath: images.path,
+          aspectRatio: const CropAspectRatio(ratioX: 4.0, ratioY: 3.0),
 
-    XFile? _imageFile = await _picker.pickImage(source: ImageSource.gallery);
+          uiSettings: [
+            AndroidUiSettings(
+                toolbarTitle: 'Cropper',
+                toolbarColor: Theme.of(context).colorScheme.primary,
+                toolbarWidgetColor: Theme.of(context).colorScheme.onPrimary,
+                initAspectRatio: CropAspectRatioPreset.original,
+                lockAspectRatio: false,
+                cropFrameColor: Theme.of(context).colorScheme.primary,
+                cropGridColor: Colors.red,
+                showCropGrid: false
+            ),
+          ]
+      ));
 
-    if (_imageFile != null) {
-      // Crop the image
-
-      _imageFile = await cropImage(_imageFile);
-      if (_imageFile != null) {
-        imageUrl.add(_imageFile.path);
-      } else {
-        return;
+      if(cropper != null) {
+        setState(() {
+          image = File(cropper.path ?? "");
+        });
       }
     }
   }
-
-  Future<XFile?> cropImage(XFile imageFile) async {
-    // Crop the image using image_cropper package
-CroppedFile? croppedFile = await ImageCropper().cropImage(
-  sourcePath: imageFile.path,
-  aspectRatio: CropAspectRatio(ratioX: 4.0, ratioY: 3.0),
-  compressQuality: 80,
-  uiSettings: [
-    AndroidUiSettings(
-      toolbarTitle: 'Jobhub Cropper',
-      toolbarColor: Color(kLightBlue.value),
-      toolbarWidgetColor: Colors.white,
-      initAspectRatio: CropAspectRatioPreset.original,
-      lockAspectRatio: true,
-    ),
-    IOSUiSettings(
-      title: 'Cropper',
-    ),
-  ],
-);
-      sourcePath: imageFile.path,
-      maxWidth: 1080,
-      maxHeight: 1920,
-      compressQuality: 80,
-      aspectRatioPresets: [CropAspectRatioPreset.ratio4x3],
-      uiSettings: [
-        AndroidUiSettings(
-            toolbarTitle: 'Jobhub Cropper',
-            toolbarColor: Color(kLightBlue.value),
-            toolbarWidgetColor: Colors.white,
-            initAspectRatio: CropAspectRatioPreset.ratio4x3,
-            lockAspectRatio: true),
-        IOSUiSettings(
-          title: 'Cropper',
-        ),
-      ],
-    );
-
-    if (croppedFile != null) {
-      notifyListeners();
-      return XFile(croppedFile.path);
-    } else {
-      return null;
-    }
-  }
+}
+}
