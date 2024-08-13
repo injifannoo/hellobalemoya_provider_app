@@ -10,6 +10,7 @@ class NavigationShow extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         shape: Border(bottom: BorderSide(color: Color(kLightGrey.value))),
+        // ignore: prefer_const_constructors
         title: Text("Navigating"),
       ),
       body: Column(

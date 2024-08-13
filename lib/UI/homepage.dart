@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:provider_app_orientation/UI/auth/login.dart';
+import 'package:provider_app_orientation/UI/map/mapview_page.dart';
 import 'package:provider_app_orientation/common/reusable_text.dart';
 import 'package:provider_app_orientation/constants/app_constants.dart';
 import 'package:provider_app_orientation/common/app_style.dart';
-import 'package:provider_app_orientation/common/bottom_sheet.dart';
 import 'package:provider_app_orientation/common/custom_btn.dart';
 import 'package:provider_app_orientation/common/custom_icon.dart';
 import 'package:provider_app_orientation/common/width_spacer.dart';
-
-import 'map/mapview_page.dart'; // Assuming you have this file for MapViewPage
+import 'package:provider_app_orientation/common/bottom_sheet.dart';
+import 'package:provider_app_orientation/data/providermock_data.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -25,12 +25,10 @@ class _HomePageState extends State<HomePage> {
     double? containerheight;
     double? nearbyContainerWidth;
     double? nearbyContainerheight;
-
     double? loginWidth;
     double? iconWidth;
     double? toolbarheight;
     double? loginHeight;
-
     double? imageWidth;
     double? headersize;
     double? buttonWidth;
@@ -39,6 +37,7 @@ class _HomePageState extends State<HomePage> {
     bool isMobile(BuildContext context) =>
         MediaQuery.of(context).size.shortestSide <= 500;
     Orientation orientaion = MediaQuery.of(context).orientation;
+
     if (isMobile(context)) {
       if (orientaion == Orientation.portrait) {
         nearbyContainerWidth = 210.w;
@@ -90,6 +89,7 @@ class _HomePageState extends State<HomePage> {
         containerheight = 290.h;
       }
     }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -136,84 +136,41 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: Stack(
           children: [
-            // MapViewPage integrated here
-            const MapviewPage(),
-            Positioned(
-              top: 30.h,
-              left: 10.w,
-              child: GestureDetector(
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 5.w),
-                  width: nearbyContainerWidth,
-                  height: nearbyContainerheight,
-                  decoration: BoxDecoration(
-                      color: Color(kBlue.value),
-                      borderRadius: BorderRadius.circular(25.r)),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      CustomIcon(
-                        width: iconWidth + 0.03,
-                        icon: Icons.location_on_sharp,
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ReusableText(
-                              text: "serviceproviders".tr,
-                              style: appstyle(headersize, Color(kLight.value),
-                                  FontWeight.w400)),
-                          ReusableText(
-                              text: "located".tr,
-                              style: appstyle(
-                                  headersize - 2,
-                                  (Color(kLight.value)).withOpacity(0.6),
-                                  FontWeight.w400))
-                        ],
-                      )
-                    ],
+            // Pass the callback to display the bottom sheet
+            MapviewPage(
+              serviceProviders: mockServiceProviders,
+              onMarkerTapped: (provider) {
+                showModalBottomSheet(
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(25),
+                    ),
                   ),
-                ),
-              ),
-            ),
-            Positioned(
-              top: 170.h,
-              left: 140.w,
-              child: GestureDetector(
-                  onTap: () {
-                    showModalBottomSheet(
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(25),
-                        ),
-                      ),
-                      context: context,
-                      builder: (BuildContext context) {
-                        return Wrap(children: [
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            color: Colors.white,
-                            child: const CustomBottomSheet(
-                                name: "Addis Mekuriya",
-                                problem: "Plumber",
-                                location: "Addis Abab,Ayat",
-                                distance: "6km",
-                                status: "online"),
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Wrap(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          color: Colors.white,
+                          child: CustomBottomSheet(
+                            name: provider.fullName,
+                            problem: provider.serviceType,
+                            location: provider.locationDescription,
+                            distance:
+                                "N/A", // You can calculate distance if needed
+                            status: provider.status,
                           ),
-                        ]);
-                      },
+                        ),
+                      ],
                     );
                   },
-                  child: CustomIcon(
-                    width: iconWidth + 0.02,
-                    icon: Icons.assistant_navigation,
-                    color: Color(kBlue.value),
-                  )),
-            )
+                );
+              },
+            ),
           ],
         ),
       ),

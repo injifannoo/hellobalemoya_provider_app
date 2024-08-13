@@ -1,18 +1,42 @@
-import 'package:provider_app_orientation/constants/app_constants.dart';
-import 'package:provider_app_orientation/common/app_style.dart';
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider_app_orientation/common/custom_btn.dart';
 
 import 'package:provider_app_orientation/common/exports.dart';
 import 'package:provider_app_orientation/common/height_spacer.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PageTwo extends StatelessWidget {
   const PageTwo({super.key});
 
+  Future<void> _activateLocation(BuildContext context) async {
+    final status = await Permission.location.request();
+
+    if (status.isGranted) {
+      try {
+        Position position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high);
+        // Use the position for further actions (e.g., displaying on the map)
+        print('Location: ${position.latitude}, ${position.longitude}');
+      } catch (e) {
+        // Handle location retrieval errors
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to get location: $e')),
+        );
+      }
+    } else {
+      // Handle permission denied scenario
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Location permission denied')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // UI code remains the same as your provided snippet
     double? iconWidth;
     double? imageWidth;
     double? headersize;
@@ -26,31 +50,32 @@ class PageTwo extends StatelessWidget {
       if (orientaion == Orientation.portrait) {
         iconWidth = sWidth / 50;
         headersize = 24;
-        buttonWidth = sWidth* 0.7;
+        buttonWidth = sWidth * 0.7;
         buttonHeight = 50;
       } else {
         iconWidth = sWidth / 50;
         headersize = 17;
-        buttonWidth = sWidth* 0.2;
+        buttonWidth = sWidth * 0.2;
         buttonHeight = 80;
       }
     } else {
       if (orientaion == Orientation.portrait) {
         iconWidth = sWidth / 50;
         headersize = 20;
-        buttonWidth =sWidth* 0.3;
+        buttonWidth = sWidth * 0.3;
         buttonHeight = 45;
       } else {
-        buttonWidth =sWidth* 0.2;
+        buttonWidth = sWidth * 0.2;
         buttonHeight = 65;
         iconWidth = sWidth / 50;
         headersize = 18;
       }
     }
+
     return Scaffold(
       body: Center(
         child: Padding(
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -73,7 +98,7 @@ class PageTwo extends StatelessWidget {
                           "You can now specify your address to deliver your orders and see which payment method is right for you",
                           style: appstyle(headersize - 10, Color(kBlue.value),
                               FontWeight.normal))),
-                  HeightSpacer(size: 50),
+                  const HeightSpacer(size: 50),
                   CustomButton(
                     text: "Activate",
                     size: headersize - 5,
@@ -81,61 +106,14 @@ class PageTwo extends StatelessWidget {
                     width: buttonWidth,
                     height: buttonHeight,
                     bcolor: Color(kOrange.value),
-                  )
+                    onTap: () => _activateLocation(context),
+                  ),
                 ],
               )
             ],
           ),
         ),
       ),
-
-      // body: Container(
-      //   width: double.infinity,
-      //   height: double.infinity,
-      //   color: Color(kLightPurple.value),
-      //   child: Column(
-      //     children: [
-      //       HeightSpacer(size: 105),
-      //       Padding(
-      //         padding: EdgeInsets.all(8.h),
-      //         child: Image.asset(
-      //           width: 250,
-      //           "assets/images/location.png",
-      //           color: Color.fromARGB(255, 217, 231, 92),
-      //         ),
-      //       ),
-      //       const HeightSpacer(size: 20),
-      //       Column(
-      //         mainAxisAlignment: MainAxisAlignment.center,
-      //         children: [
-      //           Text(
-      //             "Activate your location",
-      //             style: appstyle(30, Color(kLight.value), FontWeight.w500),
-      //           ),
-      //           HeightSpacer(size: 10),
-      //           Padding(
-      //             padding: EdgeInsets.all(8.h),
-      //             child: Text(
-      //               textAlign: TextAlign.center,
-      //               "By enabling your location we will be able to know where you are.",
-      //               style: appstyle(14, Color(kLight.value), FontWeight.normal),
-      //             ),
-      //           )
-      //         ],
-      //       ),
-      //       HeightSpacer(size: 20),
-      //       Padding(
-      //         padding: const EdgeInsets.symmetric(horizontal: 80),
-      //         child: CustomOutlineBtn(
-      //           height: 50,
-      //           text: "Activate",
-      //           color: Color(kLight.value),
-      //           color2: Color(kOrange.value),
-      //         ),
-      //       )
-      //     ],
-      //   ),
-      // ),
     );
   }
 }
