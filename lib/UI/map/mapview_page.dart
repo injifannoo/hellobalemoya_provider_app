@@ -1,47 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider_app_orientation/models/serviceprovider_model.dart';
 
 class MapviewPage extends StatefulWidget {
-  const MapviewPage({super.key});
+  final List<ServiceProvider> serviceProviders;
+  final ValueChanged<ServiceProvider> onMarkerTapped;
+
+  const MapviewPage({
+    super.key,
+    required this.serviceProviders,
+    required this.onMarkerTapped,
+  });
 
   @override
-  State<MapviewPage> createState() => _MapviewPageState();
+  _MapviewPageState createState() => _MapviewPageState();
 }
 
 class _MapviewPageState extends State<MapviewPage> {
-  // Initial location of the Map view
-  final CameraPosition _initialLocation =
-      const CameraPosition(target: LatLng(0.0, 0.0));
-
-  // For controlling the view of the Map
   GoogleMapController? mapController;
+  Set<Marker> markers = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadServiceProviders();
+  }
+
+  void _loadServiceProviders() {
+    setState(() {
+      markers.addAll(widget.serviceProviders.map((provider) {
+        return Marker(
+          markerId: MarkerId(provider.email),
+          position: provider.location,
+          infoWindow: InfoWindow(
+            title: provider.fullName,
+            snippet: provider.serviceType,
+          ),
+          onTap: () => widget.onMarkerTapped(provider),
+        );
+      }));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.of(context).size.height;
-    var width = MediaQuery.of(context).size.width;
-
-    return SizedBox(
-      height: height,
-      width: width,
-      child: Scaffold(
-        body: Stack(
-          children: <Widget>[
-            // Add Map View
-            GoogleMap(
-              initialCameraPosition: _initialLocation,
-              myLocationEnabled: true,
-              myLocationButtonEnabled: false,
-              mapType: MapType.normal,
-              zoomGesturesEnabled: true,
-              zoomControlsEnabled: false,
-              onMapCreated: (GoogleMapController controller) {
-                mapController = controller;
-              },
-            ),
-          ],
-        ),
+    return GoogleMap(
+      onMapCreated: (controller) {
+        mapController = controller;
+      },
+      initialCameraPosition: const CameraPosition(
+        target: LatLng(9.0207, 38.7597), // Default to Addis Ababa
+        zoom: 12.0,
       ),
+      markers: markers,
+      myLocationEnabled: true,
+      myLocationButtonEnabled: true,
     );
   }
 }

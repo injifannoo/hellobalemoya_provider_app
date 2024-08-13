@@ -22,7 +22,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
 
   @override
   void dispose() {
-    pageController.dispose(); // TODO: implement dispose
+    pageController.dispose(); //implement dispose
     super.dispose();
   }
 

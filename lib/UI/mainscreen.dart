@@ -7,7 +7,6 @@ import 'package:provider_app_orientation/common/exports.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -20,11 +19,11 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    HomePage(),
-    SearchPage(),
-    MyWalletPage(),
-    ProfilePage(),
-    SettingsPage(),
+    const HomePage(),
+    const SearchPage(),
+    const MyWalletPage(),
+    const ProfilePage(),
+    const SettingsPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -94,7 +93,7 @@ class _MainScreenState extends State<MainScreen> {
         ],
         backgroundColor: Colors.transparent,
         index: _selectedIndex,
-        color: Color.fromRGBO(255, 250, 250, 1),
+        color: const Color.fromRGBO(255, 250, 250, 1),
         buttonBackgroundColor: const Color.fromRGBO(255, 250, 250, 1),
         onTap: _onItemTapped,
       ),

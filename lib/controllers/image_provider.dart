@@ -27,7 +27,23 @@ class ImageUpoader extends ChangeNotifier {
 
   Future<XFile?> cropImage(XFile imageFile) async {
     // Crop the image using image_cropper package
-    CroppedFile? croppedFile = await ImageCropper.platform.cropImage(
+CroppedFile? croppedFile = await ImageCropper().cropImage(
+  sourcePath: imageFile.path,
+  aspectRatio: CropAspectRatio(ratioX: 4.0, ratioY: 3.0),
+  compressQuality: 80,
+  uiSettings: [
+    AndroidUiSettings(
+      toolbarTitle: 'Jobhub Cropper',
+      toolbarColor: Color(kLightBlue.value),
+      toolbarWidgetColor: Colors.white,
+      initAspectRatio: CropAspectRatioPreset.original,
+      lockAspectRatio: true,
+    ),
+    IOSUiSettings(
+      title: 'Cropper',
+    ),
+  ],
+);
       sourcePath: imageFile.path,
       maxWidth: 1080,
       maxHeight: 1920,
@@ -53,11 +69,3 @@ class ImageUpoader extends ChangeNotifier {
       return null;
     }
   }
-
-  //  imageUpload() async {
-  //   final ref =
-  //       FirebaseStorage.instance.ref().child('jobhub').child('${uid}jpg');
-  //   await ref.putFile(imageUrl[0]);
-  //   imageUrl = await ref.getDownloadURL();
-  // }
-}

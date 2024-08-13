@@ -26,32 +26,32 @@ class DeviceManagement extends StatelessWidget {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(50.h),
         child: AppBar(
-          title: Text("Device managment"),
+          title: const Text("Device managment"),
         ),
       ),
       body: SafeArea(
         child: Stack(
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(
+              padding: const EdgeInsets.symmetric(
                 horizontal: 20,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  HeightSpacer(size: 50),
+                  const HeightSpacer(size: 50),
                   Text(
                     "You are logged in into your account on these devices",
                     style: appstyle(16, Color(kDark.value), FontWeight.normal),
                   ),
-                  HeightSpacer(size: 50),
+                  const HeightSpacer(size: 50),
                   DeviceInfo(
                       location: "Washington DC",
                       device: "MacBook M2",
                       platform: "Apple Webkit",
                       date: loginDate,
                       ipAddress: "10.0.12.000"),
-                  HeightSpacer(size: 50),
+                  const HeightSpacer(size: 50),
                   DeviceInfo(
                       location: "Brooklyn",
                       device: "iphone 14",
